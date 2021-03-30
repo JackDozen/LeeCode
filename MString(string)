@@ -1,0 +1,227 @@
+// ConsoleApplication2.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <string>
+
+using namespace std;
+
+int main1()
+{
+	srand(time(nullptr));
+
+	cout << "the sum of the rand =";
+	int sum;
+	cin >> sum;
+	int* arr = (int*)malloc(sum * sizeof(int));
+	for (int i = 0; i < sum; i++)
+	{
+		arr[i] = rand() % 100 + 1;
+	}
+
+	for (int i = 0; i < sum; i++)
+	{
+		cout << arr[i] << "  ";
+	}
+
+	int buy_i = 0;
+	int sell_i = 0;
+
+	for (int i = 0; i < sum - 1; i++)
+	{
+		if (arr[i] < arr[i + 1])
+		{
+
+		}
+	}
+
+    std::cout << "Hello World!\n";
+	return 0;
+}
+
+/*
+string str：生成空字符串
+string s(str)：生成字符串为str的复制品
+string s(str, str_begin, str_len)：将字符串str中从下标strbegin开始、长度为strlen的部分作为字符串初值
+string s(cstr, char_len)：以C_string类型cstr的前char_len个字符串作为字符串s的初值
+string s(str, str_index)：将字符串str中从下标str_index开始到字符串结束的位置作为字符串初值
+*/
+
+class MString
+{
+public:
+	MString();
+	~MString();
+
+	MString(const char* str );
+	MString(const MString& str);
+	MString(MString& str, int str_index, int str_len);
+	MString(string& str, int char_len);
+	MString(MString& str, int str_index);
+	MString& operator=(const MString& str);
+	int mlength();
+	friend ostream& operator<<(ostream&, const MString&);
+
+	char* get_c_str() const;
+
+private:
+	int m_nlen;
+	char* m_data;
+};
+
+MString::MString()
+{
+	m_data = new char[1];
+	m_nlen = 1;
+	*m_data = '\0';
+}
+
+MString::~MString()
+{
+	//cout << "~MString" << endl;
+	delete[] m_data;
+}
+
+inline MString::MString(const char * str)
+{
+	if (str)
+	{
+		m_data = new char[strlen(str) + 1];
+		m_nlen = strlen(str) + 1;
+		strcpy_s(m_data, strlen(str) + 1, str);
+	}
+	else
+	{
+		m_data = new char[1];
+		m_nlen = 1;
+		*m_data = '\0';
+	}
+}
+
+inline MString::MString(const MString & str)
+{
+	m_data = new char[strlen(str.m_data) + 1];
+	m_nlen = strlen(str.m_data) + 1;
+	strcpy_s(m_data, strlen(str.m_data) + 1, str.m_data);
+}
+
+inline MString::MString(MString& str, int str_index, int str_len)
+{
+	if (str_len > str.m_nlen)
+	{
+		str_len = str.m_nlen;
+	}
+
+	m_data = new char[str_len + 1];
+	m_nlen = str_len;
+
+	int n = 0;
+	for (int i = str_index; i < str_index + str_len; i++)
+	{
+		m_data[n] = str.m_data[i];
+		n++;
+	}
+}
+
+MString::MString(string & str, int char_len)
+{
+	if (char_len > str.length())
+	{
+		char_len = str.length();
+	}
+
+	m_data = new char[char_len + 1];
+	m_nlen = char_len;
+
+	int n = 0;
+	for (int i = 0; i < char_len; i++)
+	{
+		m_data[n] = str[i];
+		n++;
+	}
+}
+
+MString::MString(MString & str, int str_index)
+{
+	if (str_index > str.m_nlen)
+	{
+		str_index = str.m_nlen - 1;
+	}
+
+	m_data = new char[str.m_nlen - str_index + 1];
+	m_nlen = str.m_nlen - str_index + 1;
+
+	int n = 0;
+	for (int i = str_index; i < str.m_nlen; i++)
+	{
+		m_data[n] = str.m_data[i];
+		n++;
+	}
+}
+
+MString & MString::operator=(const MString & str)
+{
+	if (this == &str)
+		return *this;
+
+	delete[] m_data;
+	m_data = new char[strlen(str.m_data) + 1];
+	strcpy_s(m_data, strlen(str.m_data) + 1, str.m_data);
+
+	return *this;
+}
+
+int MString::mlength()
+{
+	return m_nlen;
+}
+
+ostream & operator<<(ostream &out, const MString & str)
+{
+	for (int i = 0; i < str.m_nlen; i++)
+	{
+		out << str.m_data[i];
+	}
+	return out;
+}
+
+char * MString::get_c_str() const
+{
+	return m_data;
+}
+
+int main()
+{
+	MString s;
+	cout << "s >> " << &s << endl;
+	cout << s << endl;
+
+	MString str("hello C++");
+	cout << "str >> " << &str << endl;
+	cout << str << endl;
+
+	MString str1(str);
+	cout << "str1 >> " << &str1 << endl;
+	cout << str1 << endl;
+
+	MString str2 = str1;
+	cout << "str2 >> " << &str2 << endl;
+	cout << str2 << endl;
+
+	MString str3(str, 0, 5);
+	cout << "str3 >> " << &str3 << endl;
+	cout << str3 << endl;
+
+	string c_str("c_string");
+	MString str4(c_str, 5);
+	cout << "str4 >> " << &str4 << endl;
+	cout << str4 << endl;
+
+	MString str5(str, 3);
+	cout << "str5 >> " << &str5 << endl;
+	cout << str5 << endl;
+
+	return 0;
+}
