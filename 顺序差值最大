@@ -1,0 +1,58 @@
+#include <iostream>
+#include <math.h>
+#include <cstdlib>
+#include <time.h>
+
+constexpr auto _sum_test = 30;
+
+using namespace std;
+
+void func1(int* arr, int count, int& buy_i, int& sell_i)
+{
+	int max = 0;
+	for (size_t i = 0; i < count; i++)
+	{
+		for (size_t j = i; j < count; j++)
+		{
+			if ((arr[j] - arr[i]) > max)
+			{
+				max = arr[j] - arr[i];
+				buy_i = i;
+				sell_i = j;
+			}
+		}
+	}
+}
+
+int main()
+{
+	std::cout << "数据 >";
+	int* arr = new int[_sum_test];
+
+	srand((int)time(0));
+	for (int i = 0; i < _sum_test; i++)
+	{
+		arr[i] = rand() % 100;
+	}
+
+	for (int i = 0; i < _sum_test; i++)
+	{
+		cout << arr[i] << " ";
+	}
+	std::cout << "\n";
+
+	int buy = 0;
+	int sell = 0;
+	cout << "func1 >> ";
+	func1(arr, _sum_test, buy, sell);
+	cout << "buy =" << buy << ", sell =" << sell;
+
+	if (arr)
+	{
+		delete[] arr;
+		arr = nullptr;
+	}
+	std::cout << "\n";
+
+	return 0;
+}
