@@ -1,0 +1,156 @@
+#include <iostream>
+#include <math.h>
+#include <list>
+#include<iomanip>
+
+using namespace std;
+
+int* returnNum(double val, int& count)
+{
+	const char* strnum[] = { "零","壹","贰","叁","肆","伍","陆","柒","捌","玖" };
+
+	const char* strtype[] = { "仟","","拾","佰"};
+
+	const char* strtype2[] = {"","万","亿"};
+
+	const char* strpoint = "点";
+
+	list<int> numlist_l;	// 小数点左边数列
+	list<int> numlist_r;	// 小数点右边数列
+
+	// 亿级
+	float dev = 100000000.0;
+
+	while (val < dev)
+	{
+		dev *= 0.1;
+		if ((val >= dev) || dev == 0.0)
+		{
+			break;
+		}
+	}
+
+	// 提取小数点前面的数字
+	while (dev > 0.0)
+	{
+		int res = floor(val / dev);
+		numlist_l.push_back(res);
+		val = val - dev * res;
+
+		dev *= 0.1;
+		if (dev <= 0.9)
+		{
+			break;
+		}
+	}
+
+	// 提取小数点后边的数字
+	int t = count;
+	while (1)
+	{
+		int res = floor(val *= 10);
+		numlist_r.push_back(res);
+		val -= res;
+
+		t--;
+		if (t <= 0)
+		{
+			break;
+		}
+	}
+
+	// 读数
+	auto it_l = numlist_l.begin();
+	int sum = numlist_l.size();
+	int count_t = 0;
+	while (it_l != numlist_l.end())
+	{
+		// 多个零在一起的是只显示一个
+		if (*it_l == 0)
+		{
+			cout << "";
+			count_t++;
+		}
+		else
+		{
+			if (count_t > 0)
+			{
+				cout << strnum[0];
+				count_t = 0;
+			}
+			cout << strnum[*it_l];
+		}
+
+		if (*it_l == 0)
+		{
+			cout << "";
+		}
+		else
+		{
+			cout << strtype[sum % 4];
+		}
+
+		// 根据下标判断插入 "亿/万"
+		if (sum % 4 == 1)
+		{
+			if (count_t == 0)
+			{
+				cout << strtype2[sum / 4];
+			}
+		}
+
+		sum--;
+		it_l++;
+	}
+
+	// 点
+	if (numlist_r.size() > 0)
+	{
+		cout << strpoint;
+	}
+
+	auto it_r = numlist_r.begin();
+	while (it_r != numlist_r.end())
+	{
+		cout << strnum[*it_r];
+		it_r++;
+	}
+
+
+	cout << endl;
+	
+
+
+	return nullptr;
+}
+
+int main()
+{
+	int count = 6;
+	double testNum = 0.0;
+	char arr[] = "输入数字 >> ";
+	cout << arr << endl;
+	cin >> testNum;
+	cout << endl << "输入小数点精确度 >> ";
+	cin >> count; 
+	returnNum(testNum, count);
+	cout << endl;
+
+	cout << endl << "以下是测试 >> " << endl;
+	cout << " >> 520135.102567" << endl;
+	returnNum(520135.102567, count); //伍拾贰万零壹佰叁拾伍点壹零贰伍陆柒
+	char arr1[] = "伍拾贰万零壹佰叁拾伍点壹零贰伍陆柒";
+	cout << arr1 << endl << endl;
+	cout << " >> 80620135.102567" << endl;
+	returnNum(80620135.102567, count); //捌仟零陆拾贰万零壹佰叁拾伍点壹零贰伍陆柒
+	char arr2[] = "捌仟零陆拾贰万零壹佰叁拾伍点壹零贰伍陆柒";
+	cout << arr2 << endl << endl;
+	cout << " >> 380620135.102567" << endl;
+	returnNum(380620135.102567, count); //叁亿捌仟零陆拾贰万零壹佰叁拾伍点壹零贰伍陆柒
+	char arr3[] = "叁亿捌仟零陆拾贰万零壹佰叁拾伍点壹零贰伍陆柒";
+	cout << arr3 << endl << endl;
+	cout << " >> 300000987.102567" << endl;
+	returnNum(300000987.102567, count); //叁亿零玖佰捌拾柒点壹零贰伍陆柒
+	char arr4[] = "叁亿零玖佰捌拾柒点壹零贰伍陆柒";
+	cout << arr4 << endl << endl;
+}
